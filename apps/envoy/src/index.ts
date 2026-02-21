@@ -91,7 +91,7 @@ async function main() {
     case "skill": {
       const action = args[1];
       const serverName = args[2];
-      const agentType = args[3];
+      let agentType = args[3];
 
       // Parse additional options
       let location: "user" | "project" | undefined;
@@ -99,8 +99,25 @@ async function main() {
       let llmProvider: string | undefined;
       let llmApiKey: string | undefined;
       let llmModel: string | undefined;
+      let preview = false;
 
-      for (let i = 4; i < args.length; i++) {
+      // Check if agentType is actually an option (starts with --)
+      if (agentType && agentType.startsWith("--")) {
+        // No agent type specified, treat as option
+        if (agentType === "--preview") {
+          preview = true;
+        }
+        agentType = undefined;
+      }
+
+      let startIndex = 4;
+      if (!agentType && args[4] && !args[4].startsWith("--")) {
+        // Agent type is at position 4
+        agentType = args[4];
+        startIndex = 5;
+      }
+
+      for (let i = startIndex; i < args.length; i++) {
         if (args[i] === "--user") {
           location = "user";
         } else if (args[i] === "--project") {
@@ -117,6 +134,8 @@ async function main() {
         } else if (args[i] === "--llm-model" && args[i + 1]) {
           llmModel = args[i + 1];
           i++;
+        } else if (args[i] === "--preview") {
+          preview = true;
         }
       }
 
@@ -138,11 +157,13 @@ Options:
   --llm-provider    LLM provider: openai, anthropic, minimax, kimi, google
   --llm-key <key>  LLM API key (or set LLM_API_KEY env var)
   --llm-model <model>  LLM model (optional, provider-specific default)
+  --preview        Preview only, do not write to file
 
 Examples:
   envoy skill generate filesystem claude
   envoy skill generate minimax llm
   envoy skill generate myserver llm --llm-provider openai --llm-key xxx
+  envoy skill generate myserver --preview
 
 LLM Config (in ~/.config/envoy/servers.json):
 {
@@ -158,10 +179,10 @@ LLM Config (in ~/.config/envoy/servers.json):
 
       if (action === "generate") {
         if (!serverName) {
-          console.error("Usage: envoy skill generate <server-name> [agent] [--user|--project|--path <path>]");
+          console.error("Usage: envoy skill generate <server-name> [agent] [--user|--project|--path <path>] [--preview]");
           process.exit(1);
         }
-        await skillCommand(action, serverName, agentType, getConfigPath(args), location, customPath, llmProvider as any, llmApiKey, llmModel);
+        await skillCommand(action, serverName, agentType, getConfigPath(args), location, customPath, llmProvider as any, llmApiKey, llmModel, preview);
       } else {
         console.error(`Unknown skill action: ${action}`);
         process.exit(1);

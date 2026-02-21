@@ -16,15 +16,17 @@ export async function skillCommand(
   customPath?: string,
   llmProvider?: LLMProvider,
   llmApiKey?: string,
-  llmModel?: string
+  llmModel?: string,
+  preview?: boolean
 ) {
   if (action !== "generate") {
     console.error(`Unknown action: ${action}`);
-    console.error("Usage: envoy skill generate <server-name> [agent] [--user|--project|--path <path>]");
+    console.error("Usage: envoy skill generate <server-name> [agent] [--user|--project|--path <path>] [--preview]");
     console.error("  agent: claude (default), opencode, openclaw");
     console.error("  --user: Save to ~/.claude/skills/<name>/SKILL.md");
     console.error("  --project: Save to .claude/skills/<name>/SKILL.md (current directory)");
     console.error("  --path <path>: Save to custom path");
+    console.error("  --preview: Preview only, do not write to file");
     process.exit(1);
   }
 
@@ -116,6 +118,12 @@ export async function skillCommand(
   }
 
   console.log(`\nSkill will be saved to: ${skillPath}`);
+
+  if (preview) {
+    console.log("\n[Preview mode - not writing to file]");
+    setTimeout(() => process.exit(0), 100);
+    return;
+  }
 
   // Write the file
   const dir = join(skillPath, "..");

@@ -65,7 +65,8 @@ ${toolsList}
 
 - No tool calls
 - Markdown only
-- No explanations`;
+- No explanations
+- thinking using <think> tags`;
 }
 
 export async function generateLLMSkill(
@@ -99,12 +100,21 @@ export async function generateLLMSkill(
     baseURL,
   });
 
+  // reasoning_effort only supported by OpenAI
+  const supportsReasoningEffort = config.provider === "openai";
+
   const response = await client.chat.completions.create({
     model,
     messages: [{ role: "user", content: prompt }],
+    ...(supportsReasoningEffort && { reasoning_effort: "none" }),
   });
 
-  return response.choices[0]?.message?.content || "";
+  let content = response.choices[0]?.message?.content || "";
+  
+  // Strip thinking tags if present (<think> used by MiniMax/Kimi, <thinking> used by others)
+  content = content.replace(/<think(?:ing)?>([\s\S]*?)<\/think(?:ing)?>/g, "").trim();
+  
+  return content;
 }
 
 // Helper to get LLM config from environment or config file
