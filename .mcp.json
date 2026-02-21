@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "envoy": {
+      "command": "envoy",
+      "args": [
+        "serve"
+      ]
+    }
+  }
+}

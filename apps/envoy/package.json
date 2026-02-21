@@ -1,0 +1,17 @@
+{
+  "name": "@envoy/server",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./src/index.ts",
+  "bin": {
+    "envoy": "./src/index.ts"
+  },
+  "dependencies": {
+    "@envoy/core": "workspace:*",
+    "@envoy/cli": "workspace:*"
+  },
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "serve": "bun run src/server.ts"
+  }
+}

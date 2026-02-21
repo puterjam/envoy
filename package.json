@@ -1,0 +1,22 @@
+{
+  "name": "envoy",
+  "version": "0.0.1",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "bin": {
+    "envoy": "./dist/envoy"
+  },
+  "scripts": {
+    "dev": "bun run apps/envoy/src/index.ts",
+    "serve": "bun run apps/envoy/src/index.ts serve",
+    "build": "mkdir -p dist && bun build apps/envoy/src/index.ts --compile --outfile dist/envoy",
+    "link": "npm link",
+    "unlink": "npm unlink",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "ai": "^6.0.97"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@envoy/cli",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@envoy/core": "workspace:*",
+    "@envoy/skill-generator": "workspace:*"
+  },
+  "scripts": {
+    "build": "echo 'no build needed'"
+  }
+}
